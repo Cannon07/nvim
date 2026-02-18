@@ -16,3 +16,12 @@ vim.opt.rtp:prepend(lazypath)
 
 require("vim-options")
 require("lazy").setup("plugins")
+
+-- Custom modules for Claude Code integration
+require("custom.hotreload").setup()
+require("custom.directory-watcher").start()
+
+-- Yank utilities
+local yank = require("custom.yank")
+vim.keymap.set("v", "<leader>yr", yank.yank_with_relative_path, { desc = "Yank with relative path" })
+vim.keymap.set("n", "<leader>yp", yank.yank_relative_path, { desc = "Yank relative path" })
