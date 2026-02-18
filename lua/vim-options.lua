@@ -6,7 +6,10 @@ vim.wo.relativenumber = true
 vim.api.nvim_set_option("clipboard","unnamed")
 vim.g.mapleader = " "
 
-vim.opt.diffopt:append("context:6")
+vim.opt.diffopt:append("context:8")
+vim.opt.diffopt:append("vertical")
+vim.opt.diffopt:append("algorithm:patience")
+vim.opt.diffopt:append("indent-heuristic")
 
 -- Diff highlighting: green for additions, red for deletions
 vim.api.nvim_create_autocmd("ColorScheme", {
