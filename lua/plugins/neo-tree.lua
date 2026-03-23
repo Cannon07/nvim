@@ -28,15 +28,15 @@ return {
       pcall(vim.api.nvim_del_augroup_by_name, "DiffAutoClose")
     end
 
-    -- Per-window diff highlight namespaces
-    -- HEAD (original) side: red tones — lines here were "removed" in the working copy
+    -- Per-window diff highlight namespaces (matches claude-preview.nvim colors)
+    -- HEAD (original) side: red tones
     local head_ns = vim.api.nvim_create_namespace("diff_head_hl")
     vim.api.nvim_set_hl(head_ns, "DiffAdd", { bg = "#4c2e2e" })
-    vim.api.nvim_set_hl(head_ns, "DiffDelete", { bg = "#2e4c2e" })
+    vim.api.nvim_set_hl(head_ns, "DiffDelete", { bg = "#4c2e2e" })
     vim.api.nvim_set_hl(head_ns, "DiffChange", { bg = "#4c3a2e" })
     vim.api.nvim_set_hl(head_ns, "DiffText", { bg = "#5c3030" })
 
-    -- Working copy side: green tones — lines here were "added" or changed
+    -- Working copy side: green/blue tones
     local working_ns = vim.api.nvim_create_namespace("diff_working_hl")
     vim.api.nvim_set_hl(working_ns, "DiffAdd", { bg = "#2e4c2e" })
     vim.api.nvim_set_hl(working_ns, "DiffDelete", { bg = "#4c2e2e" })
@@ -93,6 +93,25 @@ return {
         },
       },
       filesystem = {
+        use_libuv_file_watcher = true,
+        renderers = {
+          file = {
+            { "indent" },
+            { "icon" },
+            {
+              "container",
+              content = {
+                { "name", zindex = 10 },
+                { "symlink_target", zindex = 10, highlight = "NeoTreeSymbolicLinkTarget" },
+                { "clipboard", zindex = 10 },
+                { "bufnr", zindex = 10 },
+                { "modified", zindex = 20, align = "right" },
+                { "diagnostics", zindex = 20, align = "right" },
+                { "git_status", zindex = 10, align = "right" },
+              },
+            },
+          },
+        },
         window = {
           mappings = {
             ["<cr>"] = "open_clean",
@@ -187,6 +206,13 @@ return {
           end,
         },
       },
+    })
+
+    -- Re-equalize diff panes when terminal is resized (e.g. tmux pane zoom)
+    vim.api.nvim_create_autocmd("VimResized", {
+      callback = function()
+        vim.defer_fn(equalize_diff_panes, 50)
+      end,
     })
 
     vim.keymap.set("n", "<C-n>", ":Neotree filesystem reveal right<CR>", {})
